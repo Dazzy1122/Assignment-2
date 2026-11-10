@@ -72,7 +72,7 @@ def main():
         parser.error(f"Input file not found: {path}")
     address = (socket.gethostbyname(args.host), args.port)
     total_retries = 0
-    start_time = time.monotonic()
+    start_time = time.perf_counter()
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         total_retries += send_and_wait(sock, address,
             packet_construction(0, 0, TYPE_START, path.name.encode("utf-8")), 0, args.timeout)
@@ -86,10 +86,16 @@ def main():
                 seq += 1
         total_retries += send_and_wait(sock, address,
             packet_construction(seq, 0, TYPE_COMPLETE), seq, args.timeout)
-    elapsed = time.monotonic() - start_time
-    print(f"[SENDER] Completed: {total_bytes} bytes, {elapsed:.3f} seconds, "
-          f"{total_retries} retransmissions, {total_bytes / elapsed:.1f} bytes/s")
+    elapsed = time.perf_counter() - start_time
 
+    # Prevent division by zero
+    throughput = total_bytes / elapsed if elapsed > 0 else 0.0
+
+    print(f"[SENDER] Transfer completed successfully!")
+    print(f"[SENDER] Total bytes: {total_bytes}")
+    print(f"[SENDER] Total time: {elapsed:.6f} seconds")
+    print(f"[SENDER] Retransmissions: {total_retries}")
+    print(f"[SENDER] Throughput: {throughput:.2f} bytes/s")
 
 if __name__ == "__main__":
     main()
