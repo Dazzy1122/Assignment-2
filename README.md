@@ -185,7 +185,3 @@ python3 -c "from pathlib import Path; print('MATCH' if Path('input.txt').read_by
 - GBN reads the whole input file and constructs all packets in memory before sending. Memory usage therefore grows with file size.
 - The Stop-and-Wait receiver remains available to re-ACK completion packets. The GBN receiver re-ACKs duplicates only during its linger period.
 - Selective Repeat and checksum-based corruption simulation are not implemented in these four scripts.
-
-## Submission
-
-Submit the four Python scripts, `report.pdf`, a video presentation demonstrating the main functionality, and `Readme.txt` as requested by the assignment. This Markdown README can be saved as `Readme.txt` for submission. Include `Bonus.txt` if claiming an implemented bonus task.
