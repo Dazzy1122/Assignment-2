@@ -12,7 +12,10 @@ Packet header: sequence number, ACK number, and packet type.
 Types: START=0, DATA=1, ACK=2, COMPLETE=3.
 
 Usage:
-    python receiver_stopwait.py --loss 0.2
+    python receiver_stopwait.py --loss 0.0  # 0% packet loss
+    python receiver_stopwait.py --loss 0.1  # 10% packet loss
+    python receiver_stopwait.py --loss 0.2  # 20% packet loss
+    python receiver_stopwait.py --loss 0.3  # 30% packet loss
 """
 
 import argparse
