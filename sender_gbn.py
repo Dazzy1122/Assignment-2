@@ -120,8 +120,14 @@ def main():
             nextseqnum += 1
 
         # -- wait for an ACK until the timer expires --
-        remaining = args.timeout - (time.perf_counter() - timer_start)
+        # -- wait for an ACK until the timer expires --
+        if timer_start is not None:
+            remaining = args.timeout - (time.perf_counter() - timer_start)
+        else:
+            remaining = args.timeout
+
         timed_out = remaining <= 0
+        
         if not timed_out:
             sock.settimeout(remaining)
             try:
