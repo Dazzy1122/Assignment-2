@@ -1,0 +1,19 @@
+Bonus Tasks Description
+Option A: Selective Repeat with a Single Timer (+10 marks)
+
+For the bonus marks, our group implemented Option A, replacing the standard Go-Back-N (GBN) protocol with Selective Repeat (SR) while strictly adhering to the single-timer constraint.
+
+To achieve this, we decoupled the retransmission logic from the window sliding logic and introduced buffering mechanisms. Here are the specific architectural changes made to the sender and receiver:
+
+SENDER SIDE MODIFICATIONS (sender_sr.py)
+1. Individual ACK Tracking: We replaced the cumulative ACK logic with a tracking set (`self.acked`) to record individual sequence numbers as they are acknowledged. 
+2. Selective Window Sliding: The sliding window no longer jumps based on a cumulative ACK. Instead, it only slides forward when the `base` packet (the oldest unacknowledged packet) is explicitly acknowledged. If out-of-order ACKs arrive, they are recorded, but the window does not move until the base gap is filled.
+3. Single Timer Management: The single timer strictly tracks the `base` packet. When the window slides, the timer resets for the new oldest unacknowledged packet.
+4. Selective Retransmission: Unlike GBN, which retransmits the entire window upon a timeout, our implementation only retransmits the specific `base` packet when the timer expires. 
+
+RECEIVER SIDE MODIFICATIONS (receiver_sr.py)
+1. Out-of-Order Buffering: Instead of discarding out-of-order packets, the receiver now uses a dictionary (`buffer`) to store packets that arrive ahead of the expected `base` sequence.
+2. Individual ACKs: The receiver always sends an ACK specifically for the sequence number it just received, regardless of whether it is in order, out of order, or a duplicate (to handle lost ACKs).
+3. Consecutive Processing: When a packet arrives that matches the receiver's `base`, it is processed immediately. The receiver then checks the buffer to process and write any previously stored consecutive packets, rapidly sliding its expected `base` forward.
+
+These changes successfully minimize unnecessary network congestion by preventing bulk retransmissions while maintaining reliability under the strict single-timer requirement.
